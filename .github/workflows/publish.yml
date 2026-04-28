@@ -1,0 +1,48 @@
+name: Publish to npm
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          registry-url: https://registry.npmjs.org
+      - name: Install dependencies
+        run: npm install --package-lock=false
+      - name: Verify exports
+        run: node -e "import('./index.js').then(m => { if (!m.DoomscrollrApi) throw new Error('DoomscrollrApi export missing') })"
+      - name: Verify package contents
+        run: npm pack --dry-run
+      - name: Read package metadata
+        id: pkg
+        run: |
+          echo "name=$(node -p "require('./package.json').name")" >> "$GITHUB_OUTPUT"
+          echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+      - name: Check if npm version already exists
+        id: npm_check
+        run: |
+          if npm view "${{ steps.pkg.outputs.name }}@${{ steps.pkg.outputs.version }}" version >/dev/null 2>&1; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+            echo "${{ steps.pkg.outputs.name }}@${{ steps.pkg.outputs.version }} already exists; skipping publish."
+          else
+            echo "published=false" >> "$GITHUB_OUTPUT"
+            echo "${{ steps.pkg.outputs.name }}@${{ steps.pkg.outputs.version }} is not published yet."
+          fi
+      - name: Publish with provenance
+        if: steps.npm_check.outputs.published == 'false'
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

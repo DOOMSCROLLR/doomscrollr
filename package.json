@@ -1,0 +1,56 @@
+{
+  "name": "doomscrollr",
+  "version": "0.1.1",
+  "description": "The front door package for DOOMSCROLLR: owned-audience websites, REST API SDK, MCP server, and n8n automation node.",
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "bin": {
+    "doomscrollr": "./bin/doomscrollr.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js"
+    }
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "bin/",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "doomscrollr",
+    "owned-audience",
+    "creator-economy",
+    "api",
+    "sdk",
+    "mcp",
+    "n8n",
+    "automation",
+    "newsletter",
+    "ecommerce"
+  ],
+  "author": "DOOMSCROLLR",
+  "license": "MIT",
+  "homepage": "https://doomscrollr.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DOOMSCROLLR/doomscrollr.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DOOMSCROLLR/doomscrollr/issues"
+  },
+  "dependencies": {
+    "@doomscrollr/api": "^0.1.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}
