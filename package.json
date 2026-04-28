@@ -1,7 +1,7 @@
 {
   "name": "doomscrollr",
-  "version": "0.1.1",
-  "description": "The front door package for DOOMSCROLLR: owned-audience websites, REST API SDK, MCP server, and n8n automation node.",
+  "version": "0.2.0",
+  "description": "DOOMSCROLLR CLI and API SDK front door for owned-audience websites.",
   "type": "module",
   "main": "./index.js",
   "types": "./index.d.ts",

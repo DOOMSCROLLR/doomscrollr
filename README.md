@@ -1,14 +1,46 @@
 # doomscrollr
 
-The billboard package for DOOMSCROLLR.
+The command-line front door for DOOMSCROLLR.
 
 ```bash
 npm install doomscrollr
 ```
 
-This package is the simple front door for DOOMSCROLLR’s developer ecosystem. It re-exports the REST API SDK from [`@doomscrollr/api`](https://www.npmjs.com/package/@doomscrollr/api) and points builders to the MCP server and n8n node.
+Use it to quickly inspect a DOOMSCROLLR owned-audience website from your terminal, or import the REST API SDK via the re-exported [`@doomscrollr/api`](https://www.npmjs.com/package/@doomscrollr/api).
 
-## Use the REST API SDK
+## CLI
+
+```bash
+export DOOMSCROLLR_API_KEY=your_api_key
+
+npx doomscrollr profile
+npx doomscrollr audience --limit 10
+npx doomscrollr posts --limit 10
+npx doomscrollr products --limit 10
+npx doomscrollr analytics --days 7
+npx doomscrollr embed
+```
+
+Commands:
+
+- `doomscrollr profile` — show account/profile stats
+- `doomscrollr settings` — show site/settings summary
+- `doomscrollr audience` — list subscribers
+- `doomscrollr posts` — list posts
+- `doomscrollr products` — list products
+- `doomscrollr analytics` — show top liked posts
+- `doomscrollr embed` — print subscriber-capture embed data/code
+- `doomscrollr docs` — print useful developer links
+
+Options:
+
+- `--api-key <key>` — override `DOOMSCROLLR_API_KEY`
+- `--base-url <url>` — override API base URL
+- `--limit <number>` — list limit
+- `--days <number>` — analytics lookback window
+- `--json` — print raw JSON
+
+## SDK re-export
 
 ```js
 import { DoomscrollrApi } from 'doomscrollr';
@@ -21,7 +53,7 @@ const profile = await doomscrollr.getProfile();
 console.log(profile);
 ```
 
-## Install the specific packages
+## Specific packages
 
 ```bash
 npm install @doomscrollr/api
@@ -29,10 +61,11 @@ npm install @doomscrollr/mcp-server
 npm install @doomscrollr/n8n-nodes-doomscrollr
 ```
 
-## CLI pointer
+## Homebrew
 
 ```bash
-npx doomscrollr
+brew tap DOOMSCROLLR/tap
+brew install doomscrollr
 ```
 
 ## Links
