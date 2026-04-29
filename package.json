@@ -1,6 +1,6 @@
 {
   "name": "doomscrollr",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "DOOMSCROLLR CLI and API SDK front door for owned-audience websites.",
   "type": "module",
   "main": "./index.js",
@@ -23,6 +23,7 @@
   ],
   "keywords": [
     "doomscrollr",
+    "ai",
     "owned-audience",
     "creator-economy",
     "api",
@@ -44,7 +45,7 @@
     "url": "https://github.com/DOOMSCROLLR/doomscrollr/issues"
   },
   "dependencies": {
-    "@doomscrollr/api": "^0.1.0"
+    "@doomscrollr/api": "^0.1.2"
   },
   "engines": {
     "node": ">=18"
