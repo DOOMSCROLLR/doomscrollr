@@ -45,7 +45,7 @@
     "url": "https://github.com/DOOMSCROLLR/doomscrollr/issues"
   },
   "dependencies": {
-    "@doomscrollr/api": "^0.1.2"
+    "@doomscrollr/api": "^0.1.1"
   },
   "engines": {
     "node": ">=18"
