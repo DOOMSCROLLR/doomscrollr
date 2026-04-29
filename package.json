@@ -1,6 +1,6 @@
 {
   "name": "doomscrollr",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "DOOMSCROLLR CLI and API SDK front door for owned-audience websites.",
   "type": "module",
   "main": "./index.js",
@@ -22,17 +22,7 @@
     "LICENSE"
   ],
   "keywords": [
-    "doomscrollr",
-    "ai",
-    "owned-audience",
-    "creator-economy",
-    "api",
-    "sdk",
-    "mcp",
-    "n8n",
-    "automation",
-    "newsletter",
-    "ecommerce"
+    "ai"
   ],
   "author": "DOOMSCROLLR",
   "license": "MIT",
