@@ -1,6 +1,6 @@
 {
   "name": "doomscrollr",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "DOOMSCROLLR CLI and API SDK front door for owned-audience websites.",
   "type": "module",
   "main": "./index.js",
@@ -19,7 +19,10 @@
     "index.d.ts",
     "bin/",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "CHANGELOG.md"
   ],
   "keywords": [
     "ai"

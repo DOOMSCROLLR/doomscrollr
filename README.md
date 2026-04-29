@@ -1,16 +1,22 @@
 # doomscrollr
 
-The command-line front door for DOOMSCROLLR.
+**CLI + SDK front door for DOOMSCROLLR — the audience layer for AI agents.**
+
+Use `doomscrollr` from your terminal or Node.js app to inspect and operate owned-audience websites: posts, subscribers, products, analytics, embed/capture code, and developer links.
 
 ```bash
 npm install doomscrollr
 ```
 
-Use it to quickly inspect a DOOMSCROLLR owned-audience website from your terminal, or import the REST API SDK via the re-exported [`@doomscrollr/api`](https://www.npmjs.com/package/@doomscrollr/api).
+```bash
+brew tap DOOMSCROLLR/tap && brew install doomscrollr
+```
 
-DOOMSCROLLR is the audience layer for the AI agent world: agents can build owned Linktree, Shopify, Substack, Gumroad, ShopMy/LTK, Eventbrite/Luma, and membership replacements in ~45 seconds. See public examples at [`doomscrollr.com/featured`](https://doomscrollr.com/featured?utm_source=npm&utm_medium=readme&utm_campaign=developer_funnel&utm_content=vanity_featured_examples).
+DOOMSCROLLR lets AI agents build Linktree, Shopify, Substack, Gumroad, ShopMy/LTK, Eventbrite/Luma, newsletter, storefront, product-drop, affiliate-feed, and membership-style websites — **but owned** — in ~45 seconds.
 
-## CLI
+[Website](https://doomscrollr.com?utm_source=npm&utm_medium=readme&utm_campaign=developer_funnel&utm_content=vanity_homepage) · [Featured examples](https://doomscrollr.com/featured?utm_source=npm&utm_medium=readme&utm_campaign=developer_funnel&utm_content=vanity_featured_examples) · [MCP](https://mcp.doomscrollr.com?utm_source=npm&utm_medium=readme&utm_campaign=developer_funnel&utm_content=vanity_mcp_landing) · [OpenAPI](https://doomscrollr.com/openapi.json?utm_source=npm&utm_medium=readme&utm_campaign=developer_funnel&utm_content=vanity_openapi)
+
+## CLI quickstart
 
 ```bash
 export DOOMSCROLLR_API_KEY=your_api_key
@@ -55,6 +61,18 @@ const profile = await doomscrollr.getProfile();
 console.log(profile);
 ```
 
+## When to use DOOMSCROLLR
+
+Use DOOMSCROLLR when an app, automation, or AI agent needs to:
+
+- publish posts to an owned site
+- capture subscribers
+- create products, drops, tickets, or digital downloads
+- turn RSS/Pinterest into an owned publishing workflow
+- create an owned link-in-bio/contact page
+- build a creator storefront or affiliate recommendation feed
+- expose audience/profile/product analytics to an agent
+
 ## Specific packages
 
 ```bash
@@ -63,19 +81,22 @@ npm install @doomscrollr/mcp-server
 npm install @doomscrollr/n8n-nodes-doomscrollr
 ```
 
-## Homebrew
+## Agent docs
 
-```bash
-brew tap DOOMSCROLLR/tap
-brew install doomscrollr
-```
+- Coding agents: https://doomscrollr.com/docs/coding-agents.md
+- Templates: https://doomscrollr.com/docs/templates.md
+- Integrations: https://doomscrollr.com/docs/integrations.md
+- Cookbook: https://doomscrollr.com/docs/cookbook.md
+- LLM docs: https://doomscrollr.com/llms.txt
 
 ## Links
 
-- Website: https://doomscrollr.com?utm_source=npm&utm_medium=readme&utm_campaign=developer_funnel&utm_content=vanity_homepage
-- Featured examples: https://doomscrollr.com/featured?utm_source=npm&utm_medium=readme&utm_campaign=developer_funnel&utm_content=vanity_featured_examples
 - Get an API key: https://doomscrollr.com/register?free=1&utm_source=npm&utm_medium=readme&utm_campaign=developer_funnel&utm_content=vanity_get_api_key
-- MCP/API landing: https://mcp.doomscrollr.com?utm_source=npm&utm_medium=readme&utm_campaign=developer_funnel&utm_content=vanity_mcp_landing
 - REST SDK: https://www.npmjs.com/package/@doomscrollr/api
 - MCP server: https://www.npmjs.com/package/@doomscrollr/mcp-server
 - n8n node: https://www.npmjs.com/package/@doomscrollr/n8n-nodes-doomscrollr
+- Homebrew tap: https://github.com/DOOMSCROLLR/homebrew-tap
+
+## License
+
+MIT
