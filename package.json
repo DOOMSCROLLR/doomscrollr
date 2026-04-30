@@ -1,6 +1,6 @@
 {
   "name": "doomscrollr",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "DOOMSCROLLR CLI and API SDK front door for owned-audience websites.",
   "type": "module",
   "main": "./index.js",
@@ -25,7 +25,21 @@
     "CHANGELOG.md"
   ],
   "keywords": [
-    "ai"
+    "ai",
+    "ai-agents",
+    "ai-agent",
+    "agents",
+    "mcp",
+    "model-context-protocol",
+    "chatgpt",
+    "claude",
+    "openai",
+    "automation",
+    "owned-audience",
+    "creator-tools",
+    "ecommerce",
+    "shopify",
+    "doomscrollr"
   ],
   "author": "DOOMSCROLLR",
   "license": "MIT",
