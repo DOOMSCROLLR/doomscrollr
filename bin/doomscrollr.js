@@ -1,6 +1,14 @@
 #!/usr/bin/env node
 
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import readline from 'node:readline';
+import { spawn } from 'node:child_process';
+
 const DEFAULT_BASE_URL = 'https://doomscrollr.com/api/v1';
+const CREDENTIALS_DIR = path.join(os.homedir(), '.doomscrollr');
+const CREDENTIALS_FILE = path.join(CREDENTIALS_DIR, 'credentials.json');
 
 const docs = `DOOMSCROLLR
 
@@ -22,6 +30,9 @@ Commands:
   analytics [--days 30]        Show top liked posts
   embed                        Print subscriber-capture embed code/data
   docs                         Print useful DOOMSCROLLR developer links
+  setup                        Interactive walkthrough — register, get API key, save locally
+  whoami                       Show which account is currently authenticated
+  logout                       Remove stored credentials
 
 Options:
   --api-key <key>              Override DOOMSCROLLR_API_KEY
@@ -67,14 +78,172 @@ function parseArgs(argv) {
   return { command, options };
 }
 
+function loadStoredCredentials() {
+  try {
+    if (!fs.existsSync(CREDENTIALS_FILE)) return null;
+    const raw = fs.readFileSync(CREDENTIALS_FILE, 'utf8');
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+function saveCredentials(creds) {
+  fs.mkdirSync(CREDENTIALS_DIR, { recursive: true, mode: 0o700 });
+  fs.writeFileSync(CREDENTIALS_FILE, JSON.stringify(creds, null, 2), { mode: 0o600 });
+}
+
+function clearCredentials() {
+  try { fs.unlinkSync(CREDENTIALS_FILE); } catch {}
+}
+
 function requireApiKey(options) {
-  const apiKey = options.apiKey || process.env.DOOMSCROLLR_API_KEY;
+  // Priority: --api-key flag > env var > stored credentials > error
+  const flagKey = options.apiKey;
+  const envKey = process.env.DOOMSCROLLR_API_KEY;
+  const stored = loadStoredCredentials();
+  const apiKey = flagKey || envKey || stored?.apiKey;
   if (!apiKey) {
-    console.error('Missing API key. Set DOOMSCROLLR_API_KEY or pass --api-key <key>.');
-    console.error('Example: DOOMSCROLLR_API_KEY=... doomscrollr profile');
+    console.error('No API key found.');
+    console.error('');
+    console.error('Quickest path: run `npx doomscrollr setup` for an interactive walkthrough.');
+    console.error('Or: export DOOMSCROLLR_API_KEY=your_key and re-run.');
     process.exit(2);
   }
   return apiKey;
+}
+
+function prompt(question) {
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+  return new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      rl.close();
+      resolve(answer.trim());
+    });
+  });
+}
+
+function openInBrowser(url) {
+  const platform = os.platform();
+  const cmd = platform === 'darwin' ? 'open' : platform === 'win32' ? 'start' : 'xdg-open';
+  try { spawn(cmd, [url], { detached: true, stdio: 'ignore' }).unref(); return true; }
+  catch { return false; }
+}
+
+async function runSetup(options) {
+  console.log('');
+  console.log('  ____   ___   ___  __  __ ____   ____ ____   ___  _     _     ____  ');
+  console.log(' |  _ \\ / _ \\ / _ \\|  \\/  / ___| / ___|  _ \\ / _ \\| |   | |   |  _ \\ ');
+  console.log(' | | | | | | | | | | |\\/| \\___ \\| |   | |_) | | | | |   | |   | |_) |');
+  console.log(' | |_| | |_| | |_| | |  | |___) | |___|  _ <| |_| | |___| |___|  _ < ');
+  console.log(' |____/ \\___/ \\___/|_|  |_|____/ \\____|_| \\_\\\\___/|_____|_____|_| \\_\\');
+  console.log('');
+  console.log('  Welcome. This walkthrough takes <60 seconds.');
+  console.log('  We\'ll help you create an account (free) and connect this CLI.');
+  console.log('');
+
+  // Step 1: register account
+  const existing = loadStoredCredentials();
+  if (existing && existing.apiKey) {
+    const replace = await prompt(`  You're already set up as ${existing.email || 'a user'}. Re-link a different account? [y/N] `);
+    if (replace.toLowerCase() !== 'y') {
+      console.log('  No changes. Try `doomscrollr profile` to see your current account.');
+      return;
+    }
+  }
+
+  console.log('  STEP 1 of 2: Create your free DOOMSCROLLR account.');
+  console.log('');
+  const hasAccount = await prompt('  Do you already have a DOOMSCROLLR account? [y/N] ');
+  if (hasAccount.toLowerCase() !== 'y') {
+    console.log('  Opening registration in your browser...');
+    const opened = openInBrowser('https://doomscrollr.com/register?free=1&utm_source=cli&utm_medium=setup');
+    if (!opened) {
+      console.log('  Couldn\'t auto-open. Visit:');
+      console.log('    https://doomscrollr.com/register?free=1');
+    }
+    console.log('');
+    await prompt('  Press Enter when you\'ve finished signing up...');
+  }
+
+  // Step 2: get API key
+  console.log('');
+  console.log('  STEP 2 of 2: Get your API key.');
+  console.log('');
+  console.log('  In your DOOMSCROLLR dashboard:');
+  console.log('    1. Go to Settings → API Keys');
+  console.log('    2. Click "Create API Key"');
+  console.log('    3. Copy the key');
+  console.log('');
+  const openDash = await prompt('  Open the dashboard for you? [Y/n] ');
+  if (openDash.toLowerCase() !== 'n') {
+    openInBrowser('https://doomscrollr.com/dashboard/settings/api-keys?utm_source=cli&utm_medium=setup');
+  }
+  console.log('');
+  const apiKey = await prompt('  Paste your API key here: ');
+  if (!apiKey || apiKey.length < 10) {
+    console.error('  That doesn\'t look like a valid key. Try `npx doomscrollr setup` again.');
+    process.exit(2);
+  }
+
+  // Step 3: verify
+  console.log('');
+  console.log('  Verifying...');
+  try {
+    const profile = await request('/profile', { ...options, apiKey });
+    saveCredentials({
+      apiKey,
+      email: profile.email || profile.account?.email,
+      username: profile.username || profile.account?.username,
+      url: profile.url || profile.domain || profile.account?.url,
+      savedAt: new Date().toISOString(),
+    });
+    console.log('  ✅ Connected.');
+    console.log('');
+    console.log(`     Account:     ${profile.username || profile.account?.username || '(unknown)'}`);
+    console.log(`     Site URL:    ${profile.url || profile.domain || profile.account?.url || '(none yet)'}`);
+    console.log(`     Subscribers: ${profile.subscribers_count ?? profile.stats?.subscribers ?? 0}`);
+    console.log(`     Posts:       ${profile.posts_count ?? profile.stats?.posts ?? 0}`);
+    console.log(`     Products:    ${profile.products_count ?? profile.stats?.products ?? 0}`);
+    console.log('');
+    console.log('  Saved to ~/.doomscrollr/credentials.json (chmod 600)');
+    console.log('');
+    console.log('  Try these next:');
+    console.log('    doomscrollr profile     # see your account stats');
+    console.log('    doomscrollr posts        # list your posts');
+    console.log('    doomscrollr audience     # list your subscribers');
+    console.log('    doomscrollr docs         # developer links + MCP/API references');
+    console.log('');
+    console.log('  Or pipe DOOMSCROLLR into your AI agent stack:');
+    console.log('    npm install -g @doomscrollr/mcp-server   # MCP server for Claude Code, Cursor, OpenClaw');
+    console.log('    https://mcp.doomscrollr.com               # hosted MCP endpoint for any agent');
+    console.log('');
+  } catch (err) {
+    console.error(`  ❌ Verification failed: ${err.message}`);
+    console.error('  Double-check your API key. Try `npx doomscrollr setup` again.');
+    process.exit(2);
+  }
+}
+
+async function runWhoami(options) {
+  const stored = loadStoredCredentials();
+  if (!stored) {
+    console.log('Not authenticated. Run `npx doomscrollr setup` to connect.');
+    process.exit(2);
+  }
+  console.log(`Authenticated as: ${stored.username || stored.email || '(unknown)'}`);
+  console.log(`Site URL:         ${stored.url || '(none)'}`);
+  console.log(`Saved at:         ${stored.savedAt || '(unknown)'}`);
+  console.log(`Credentials file: ${CREDENTIALS_FILE}`);
+}
+
+function runLogout() {
+  if (!fs.existsSync(CREDENTIALS_FILE)) {
+    console.log('Already logged out (no credentials stored).');
+    return;
+  }
+  clearCredentials();
+  console.log('Logged out. Credentials removed from ~/.doomscrollr/credentials.json');
 }
 
 async function request(path, options = {}) {
@@ -139,6 +308,21 @@ async function main() {
 
   if (['help', '-h', '--help'].includes(command)) {
     console.log(docs);
+    return;
+  }
+
+  if (command === 'setup' || command === 'init' || command === 'login') {
+    await runSetup(options);
+    return;
+  }
+
+  if (command === 'whoami') {
+    await runWhoami(options);
+    return;
+  }
+
+  if (command === 'logout') {
+    runLogout();
     return;
   }
 

@@ -1,6 +1,6 @@
 {
   "name": "doomscrollr",
-  "version": "0.2.5",
+  "version": "0.3.0",
   "description": "DOOMSCROLLR CLI and API SDK front door for owned-audience websites.",
   "type": "module",
   "main": "./index.js",
